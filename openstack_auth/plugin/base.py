@@ -13,6 +13,7 @@
 import abc
 import logging
 
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from keystoneauth1 import exceptions as keystone_exceptions
 from keystoneclient.v2_0 import client as v2_client
@@ -132,7 +133,8 @@ class BasePlugin(object):
                 keystone_exceptions.Forbidden,
                 keystone_exceptions.NotFound) as exc:
             LOG.debug(str(exc))
-            raise exceptions.KeystoneAuthException(_('Invalid credentials.'))
+            msg = _(mark_safe('Invalid credentials.<br />Please see <a href="https://www.chameleoncloud.org/docs/user-faq/">our User FAQ</a> for help.'))
+            raise exceptions.KeystoneAuthException(msg)
         except (keystone_exceptions.ClientException,
                 keystone_exceptions.AuthorizationFailure) as exc:
             msg = _("An error occurred authenticating. "
